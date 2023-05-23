@@ -1,19 +1,19 @@
-import mongoose from "mongoose";
+
 import autores from "../models/Autor.js";
 
 class AutorController {
     
-  static listarAutores = async (req, res) => {
+  static listarAutores = async (req, res, next) => {
     try {
       const autoresResultado = await autores.find();
 
       res.status(200).json(autoresResultado);
     } catch (error) {
-      res.status(500).json({message: "Eroo interno no servidor" });
+      next(error);
     }
   };
 
-  static listarAutorPorId = async (req, res) => {
+  static listarAutorPorId = async (req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -26,16 +26,11 @@ class AutorController {
       }
 
     } catch (erro) {
-      if (erro instanceof mongoose.Error.CastError) {
-        res.status(400).send({message: "Um ou mais dados fornecidos estão incorretos"});
-      } else {
-        res.status(500).send({message: "Erro interno do servidor"});
-      }
-
+      next(erro);
     }
   };
 
-  static cadastrarAutor = async (req, res) => {
+  static cadastrarAutor = async (req, res, next) => {
     try {
       let autor = new autores(req.body);
 
@@ -43,12 +38,12 @@ class AutorController {
 
       res.status(201).send(autorResultado);
     } catch (error) {
-      res.status(500).json({message: "Eroo interno no servidor" });
+      next(error);
     } 
     
   };
 
-  static atualizarAutor = async (req, res) => {
+  static atualizarAutor = async (req, res, next) => {
     try {
       const id = req.params.id;
 
@@ -56,21 +51,20 @@ class AutorController {
 
       res.status(200).send(autorResultado);
     } catch (error) {
-      res.status(500).send({message: error.message});
+      next(error);
     }
     
   };
 
-  static deletaAutor = async (req, res) => {
+  static deletaAutor = async (req, res, next) => {
     try {
       const id = req.params.id;
 
       const autorResultado = await autores.findByIdAndDelete(id);
-    
 
       res.status(200).send({ message: `${autorResultado.nome} deletado com sucesso` });
     } catch (error) {
-      res.status(500).send({message: error.message});
+      next(error);
     }
     
   };
