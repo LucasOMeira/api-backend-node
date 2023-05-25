@@ -50,12 +50,17 @@ class AutorController {
 
       const autorResultado = await autores.findByIdAndUpdate(id, {$set: req.body});
 
-      res.status(200).send(autorResultado);
-    } catch (error) {
-      next(error);
+      if (autorResultado !== null) {
+        res.status(200).send(autorResultado);
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado"));
+      }
+
+    } catch (erro) {
+      next(erro);
     }
-    
   };
+
 
   static deletaAutor = async (req, res, next) => {
     try {
@@ -63,7 +68,12 @@ class AutorController {
 
       const autorResultado = await autores.findByIdAndDelete(id);
 
-      res.status(200).send({ message: `${autorResultado.nome} deletado com sucesso` });
+      if (autorResultado !== null) {
+        res.status(200).send({ message: `${autorResultado.nome} deletado com sucesso` });
+      } else {
+        next(new NaoEncontrado("Id do Autor não localizado"));
+      }
+    
     } catch (error) {
       next(error);
     }
